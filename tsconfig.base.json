@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": [
+                "packages/shared/*"
+            ]
+        },
+        "moduleResolution": "node",
+        "strict": true
+    },
+    "include": [
+        "apps/**/*",
+        "packages/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
