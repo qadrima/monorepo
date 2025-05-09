@@ -28,12 +28,12 @@ Install dependencies:
    ```
 Configure the project:
    - Copy `config.example.json` to `config.json`
-   - Fill in the required configuration values in `config.json`:
-     - Backend Firebase service account details
-     - Frontend Firebase project configuration
    ```bash
    cp config.example.json config.json
    ```
+   - Fill in the required configuration values in `config.json`:
+     - Backend Firebase service account details
+     - Frontend Firebase project configuration
 
 ## Development
 
