@@ -1,6 +1,6 @@
 "use client";  // Tambahkan untuk Client Component
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     Box,
     CircularProgress,
@@ -11,17 +11,24 @@ import {
     Chip,
     Container,
     Tooltip,
-    Button
+    Button,
+    IconButton,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsers, addUsers } from "@/store/usersReducer";
 import { RootState } from "@/store/store";
-import { fetchUsers, FetchUsersOptions } from "@/apis/userApi";
+import { fetchUsers, FetchUsersOptions, updateUserData } from "@/apis/userApi";
 import EmailIcon from '@mui/icons-material/Email';
 import StarIcon from '@mui/icons-material/Star';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import AddIcon from '@mui/icons-material/Add';
 import { getInitials, formatDate, getActivityColor, getIconColor } from "@/utils/formatUtils";
+import { getDatabase, ref, onValue, off } from 'firebase/database';
 
 // Add global interface declaration
 declare global {
@@ -31,13 +38,46 @@ declare global {
 }
 
 export default function UsersList() {
+
+    const defaultDataSize = 6;
     const dispatch = useDispatch();
     const users = useSelector((state: RootState) => state.users.users);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [pageSize] = useState(12);
+    const [pageSize] = useState(defaultDataSize);
     const [lastUserId, setLastUserId] = useState<string | undefined>(undefined);
+    const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
+    const [updateStatus, setUpdateStatus] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Clear timeout on component unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Function to schedule a refresh with debounce
+    const scheduleRefresh = () => {
+        // Clear any existing timeout first
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => {
+            console.log("refreshing users list");
+            refreshUsersList();
+            timeoutRef.current = null; // Reset after execution
+        }, 1500);
+    };
 
     const loadUsers = async (options: FetchUsersOptions = {}) => {
         try {
@@ -103,6 +143,38 @@ export default function UsersList() {
         loadUsers({ limit: pageSize });
     }, []);
 
+    // Set up online status listeners
+    useEffect(() => {
+        if (!users || users.length === 0) return;
+
+        const db = getDatabase();
+        const statusRefs: Record<string, any> = {};
+
+        users.forEach(user => {
+            if (!user.id) return;
+
+            const statusRef = ref(db, `status/${user.id}/state`);
+            statusRefs[user.id] = statusRef;
+
+            onValue(statusRef, (snapshot) => {
+                const isOnline = snapshot.exists() && snapshot.val() === 'online';
+                setOnlineStatus(prev => ({
+                    ...prev,
+                    [user.id]: isOnline
+                }));
+            });
+        });
+
+        // Cleanup function
+        return () => {
+            users.forEach(user => {
+                if (user.id && statusRefs[user.id]) {
+                    off(statusRefs[user.id]);
+                }
+            });
+        };
+    }, [users]);
+
     // Export the refresh function to be accessible from other components
     useEffect(() => {
         // Make the refresh function globally accessible
@@ -113,6 +185,104 @@ export default function UsersList() {
             delete window.refreshUsersList;
         };
     }, []);
+
+    // Function to increase user rating
+    const handleIncreaseRating = async (userId: string) => {
+        try {
+            const userToUpdate = users.find(user => user.id === userId);
+            if (!userToUpdate) return;
+
+            const currentRating = userToUpdate.totalAverageWeightRatings || 0;
+            const newRating = parseFloat((currentRating + 0.1).toFixed(1));
+
+            // Update local state first for responsive UI
+            const updatedUsers = users.map(user => {
+                if (user.id === userId) {
+                    return {
+                        ...user,
+                        totalAverageWeightRatings: newRating
+                    };
+                }
+                return user;
+            });
+            dispatch(setUsers(updatedUsers));
+
+            // Update API
+            const updatedUserData = {
+                ...userToUpdate,
+                totalAverageWeightRatings: newRating
+            };
+
+            await updateUserData(updatedUserData);
+            setUpdateStatus({
+                open: true,
+                message: `Rating increased for ${userToUpdate.name}`,
+                severity: 'success'
+            });
+
+            scheduleRefresh();
+        } catch (error) {
+            console.error("Failed to update user rating:", error);
+            setUpdateStatus({
+                open: true,
+                message: 'Failed to update rating',
+                severity: 'error'
+            });
+        }
+    };
+
+    // Function to increase number of rents
+    const handleIncreaseRents = async (userId: string) => {
+        try {
+            const userToUpdate = users.find(user => user.id === userId);
+            if (!userToUpdate) return;
+
+            const currentRents = userToUpdate.numberOfRents || 0;
+            const newRents = currentRents + 1;
+
+            // Update local state first for responsive UI
+            const updatedUsers = users.map(user => {
+                if (user.id === userId) {
+                    return {
+                        ...user,
+                        numberOfRents: newRents
+                    };
+                }
+                return user;
+            });
+            dispatch(setUsers(updatedUsers));
+
+            // Update API
+            const updatedUserData = {
+                ...userToUpdate,
+                numberOfRents: newRents
+            };
+
+            await updateUserData(updatedUserData);
+            setUpdateStatus({
+                open: true,
+                message: `Rents increased for ${userToUpdate.name}`,
+                severity: 'success'
+            });
+
+            scheduleRefresh();
+        } catch (error) {
+            console.error("Failed to update user rents:", error);
+            setUpdateStatus({
+                open: true,
+                message: 'Failed to update rents',
+                severity: 'error'
+            });
+        }
+    };
+
+    // Handle closing the snackbar
+    const handleCloseSnackbar = () => {
+        setUpdateStatus({
+            ...updateStatus,
+            open: false
+        });
+    };
 
     return (
         <Container maxWidth="lg">
@@ -149,8 +319,8 @@ export default function UsersList() {
                                             <Box display="flex" alignItems="flex-start" mb={2}>
                                                 <Avatar
                                                     sx={{
-                                                        width: { xs: 40, sm: 56 },
-                                                        height: { xs: 40, sm: 56 },
+                                                        width: { xs: 32, sm: 40 },
+                                                        height: { xs: 32, sm: 40 },
                                                         bgcolor: 'primary.main',
                                                         mr: 2,
                                                         flexShrink: 0
@@ -158,20 +328,7 @@ export default function UsersList() {
                                                 >
                                                     {getInitials(user.name)}
                                                 </Avatar>
-                                                <Box sx={{ minWidth: 0, flex: 1 }}>
-                                                    <Typography
-                                                        variant="h6"
-                                                        component="div"
-                                                        sx={{
-                                                            fontSize: { xs: '1rem', sm: '1.25rem' },
-                                                            mb: 0.5,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap'
-                                                        }}
-                                                    >
-                                                        {user.name}
-                                                    </Typography>
+                                                <Box sx={{ minWidth: 0, flex: 1, mt: 1.5 }}>
                                                     <Tooltip title={user.email}>
                                                         <Box
                                                             display="flex"
@@ -205,17 +362,44 @@ export default function UsersList() {
                                             </Box>
 
                                             <Box display="flex" flexDirection="column" gap={1}>
-                                                <Box display="flex" alignItems="center" gap={1}>
-                                                    <StarIcon fontSize="small" color="warning" sx={{ flexShrink: 0 }} />
-                                                    <Typography variant="body2">
-                                                        Rating: {user.totalAverageWeightRatings?.toFixed(1) || 'N/A'}
-                                                    </Typography>
+                                                <Box display="flex" alignItems="center">
+                                                    <Box display="flex" alignItems="center" gap={1} sx={{ flexGrow: 1 }}>
+                                                        <StarIcon fontSize="small" color="warning" sx={{ flexShrink: 0 }} />
+                                                        <Typography variant="body2">
+                                                            Rating: {user.totalAverageWeightRatings?.toFixed(1) || 'N/A'}
+                                                        </Typography>
+                                                    </Box>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="primary"
+                                                        onClick={() => handleIncreaseRating(user.id)}
+                                                        sx={{ ml: 'auto' }}
+                                                    >
+                                                        <AddIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Box>
+
+                                                <Box display="flex" alignItems="center">
+                                                    <Box display="flex" alignItems="center" gap={1} sx={{ flexGrow: 1 }}>
+                                                        <ShoppingCartIcon fontSize="small" color="info" sx={{ flexShrink: 0 }} />
+                                                        <Typography variant="body2">
+                                                            Total Rents: {user.numberOfRents || 0}
+                                                        </Typography>
+                                                    </Box>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="primary"
+                                                        onClick={() => handleIncreaseRents(user.id)}
+                                                        sx={{ ml: 'auto' }}
+                                                    >
+                                                        <AddIcon fontSize="small" />
+                                                    </IconButton>
                                                 </Box>
 
                                                 <Box display="flex" alignItems="center" gap={1}>
-                                                    <ShoppingCartIcon fontSize="small" color="info" sx={{ flexShrink: 0 }} />
+                                                    <AssessmentIcon fontSize="small" color="success" sx={{ flexShrink: 0 }} />
                                                     <Typography variant="body2">
-                                                        Total Rents: {user.numberOfRents || 0}
+                                                        Composite Score: {user.compositeScore?.toFixed(1) || 'N/A'}
                                                     </Typography>
                                                 </Box>
 
@@ -227,9 +411,9 @@ export default function UsersList() {
                                                     />
                                                     <Tooltip title={user.recentlyActive ? new Date(user.recentlyActive).toLocaleString() : 'Never active'}>
                                                         <Chip
-                                                            label={formatDate(user.recentlyActive)}
+                                                            label={onlineStatus[user.id] ? "Online" : formatDate(user.recentlyActive)}
                                                             size="small"
-                                                            color={getActivityColor(user.recentlyActive)}
+                                                            color={onlineStatus[user.id] ? "success" : getActivityColor(user.recentlyActive)}
                                                             variant="outlined"
                                                             sx={{ maxWidth: '100%' }}
                                                         />
@@ -270,6 +454,20 @@ export default function UsersList() {
                     </>
                 )}
             </Box>
+            <Snackbar
+                open={updateStatus.open}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={updateStatus.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {updateStatus.message}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { setUserData, getUsers } from "../repository/userCollection";
 import { User, ApiResponse, UserResponse, ApiUserResponse, ApiErrorResponse } from '@/shared/user';
+import { recalculateUserScore } from "../core/statusListener";
 
 interface ApiUsersResponse extends Omit<ApiResponse, 'data'> {
     data: User[];
@@ -22,6 +23,7 @@ export const updateUserData = async (req: Request, res: Response) => {
 
     try {
         await setUserData(data);
+        await recalculateUserScore(data.id);
 
         const userResponse: UserResponse = {
             id: data.id,

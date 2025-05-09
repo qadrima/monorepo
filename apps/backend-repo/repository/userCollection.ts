@@ -1,5 +1,4 @@
 import { firestore } from "../config/firebase";
-import { updateCompositeScore } from "./updateCompositeScore";
 import { User } from "@/shared/user";
 
 const userCollection = firestore.collection("users");
@@ -38,7 +37,6 @@ export const setUserData = async (data: Partial<User>): Promise<void> => {
     if (!data.id) throw new Error("User ID is required");
 
     try {
-        // const updatedData = await updateCompositeScore(data);
         const docRef = userCollection.doc(data.id);
         const docSnap = await docRef.get();
 

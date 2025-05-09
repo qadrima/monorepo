@@ -53,12 +53,13 @@ export function usePresence() {
             state: "online"
           });
           timeoutId = null;
-        }, 2000);
+        }, 1500);
       }
 
     });
 
     onValue(connectedRef, (snapshot) => {
+      console.log("connectedRef value:", snapshot.val());
       if (snapshot.val() === false) {
         return;
       }

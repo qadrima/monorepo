@@ -18,8 +18,11 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@types/node-schedule": "^2.1.7",
     "turbo": "^2.5.2"
   },
   "packageManager": "npm@10.8.1",
-  "dependencies": {}
+  "dependencies": {
+    "node-schedule": "^2.1.1"
+  }
 }
