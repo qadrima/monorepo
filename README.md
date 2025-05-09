@@ -31,6 +31,9 @@ Configure the project:
    - Fill in the required configuration values in `config.json`:
      - Backend Firebase service account details
      - Frontend Firebase project configuration
+   ```bash
+   cp config.example.json config.json
+   ```
 
 ## Development
 
