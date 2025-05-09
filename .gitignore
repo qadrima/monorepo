@@ -1,3 +1,5 @@
 .turbo
 node_modules
 config.json
+apps/frontend-repo/firestore-debug.log
+apps/frontend-repo/database-debug.log

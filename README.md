@@ -46,6 +46,8 @@ This will start all packages and applications in development mode.
 
 ### Run Firebase emulators (for local development):
 ```bash
+npm install -g firebase-tools
+
 npm run emul
 ```
 

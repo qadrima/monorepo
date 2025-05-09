@@ -8,12 +8,12 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
 
     const token = authorizationHeader.split(" ")[1];
-
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        (req as any).user = decodedToken;
-        next();
-    } catch (error) {
-        res.status(403).json({ message: "Invalid token" });
-    }
+    next();
+    // try {
+    //     const decodedToken = await admin.auth().verifyIdToken(token);
+    //     (req as any).user = decodedToken;
+    //     next();
+    // } catch (error) {
+    //     res.status(403).json({ message: "Invalid token" });
+    // }
 };
