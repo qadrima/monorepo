@@ -1,5 +1,5 @@
 const serviceAccount = require("../../../config.json");
-const projectId = serviceAccount['be']['project_id'] ?? '';
+const projectId = serviceAccount['be']['projectId'] ?? '';
 
 if (serviceAccount['localhost'] === true) {
     process.env.FIREBASE_AUTH_EMULATOR_HOST = "localhost:9099";
