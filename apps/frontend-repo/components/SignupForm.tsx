@@ -19,7 +19,6 @@ import {
     Paper,
 } from "@mui/material";
 
-// Add the global interface declaration
 declare global {
     interface Window {
         refreshUsersList?: () => void;
@@ -67,8 +66,6 @@ export default function SignupForm() {
             }));
             dispatch(setLoadingForm(false));
 
-            // Refresh users list after successful signup
-            // @ts-ignore - Using the global function we attached in UsersList component
             if (typeof window !== 'undefined' && window.refreshUsersList) {
                 window.refreshUsersList();
             }

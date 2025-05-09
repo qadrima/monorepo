@@ -1,4 +1,4 @@
-"use client";  // Tambahkan untuk Client Component
+"use client";
 
 import { useEffect, useState, useRef } from "react";
 import {
@@ -30,7 +30,6 @@ import AddIcon from '@mui/icons-material/Add';
 import { getInitials, formatDate, getActivityColor, getIconColor } from "@/utils/formatUtils";
 import { getDatabase, ref, onValue, off } from 'firebase/database';
 
-// Add global interface declaration
 declare global {
     interface Window {
         refreshUsersList?: () => void;
@@ -55,7 +54,6 @@ export default function UsersList() {
     });
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Clear timeout on component unmount
     useEffect(() => {
         return () => {
             if (timeoutRef.current) {
@@ -64,9 +62,7 @@ export default function UsersList() {
         };
     }, []);
 
-    // Function to schedule a refresh with debounce
     const scheduleRefresh = () => {
-        // Clear any existing timeout first
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
@@ -75,7 +71,7 @@ export default function UsersList() {
         timeoutRef.current = setTimeout(() => {
             console.log("refreshing users list");
             refreshUsersList();
-            timeoutRef.current = null; // Reset after execution
+            timeoutRef.current = null;
         }, 1500);
     };
 
@@ -124,9 +120,8 @@ export default function UsersList() {
         }
     };
 
-    // Function to refresh users list - can be called after successful signup
     const refreshUsersList = () => {
-        setLastUserId(undefined); // Reset pagination
+        setLastUserId(undefined);
         loadUsers({ limit: pageSize });
     };
 

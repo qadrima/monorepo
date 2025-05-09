@@ -42,7 +42,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const { user, loadingAuth, themeMode } = useSelector((state: RootState) => state.auth);
 
-    // Listen to auth changes
     useEffect(() => {
         const unsubscribe = dispatch(listenToAuthChanges());
         return () => unsubscribe();

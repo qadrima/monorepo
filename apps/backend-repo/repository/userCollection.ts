@@ -5,7 +5,7 @@ const userCollection = firestore.collection("users");
 
 export interface GetUsersOptions {
     limit?: number;
-    startAfter?: string; // document ID to start after
+    startAfter?: string;
     descending?: boolean;
 }
 
