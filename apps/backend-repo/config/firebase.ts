@@ -1,5 +1,5 @@
 const serviceAccount = require("../../../config.json");
-const projectId = serviceAccount['be']['projectId'] ?? '';
+const projectId = serviceAccount['be']['project_id'] ?? '';
 
 if (serviceAccount['localhost'] === true) {
     process.env.FIREBASE_AUTH_EMULATOR_HOST = "localhost:9099";
@@ -7,7 +7,7 @@ if (serviceAccount['localhost'] === true) {
     process.env.FIREBASE_DATABASE_EMULATOR_HOST = "localhost:9000";
 }
 
-// Tambahkan databaseURL secara eksplisit
+// Initialize Firebase Admin SDK
 import admin from "firebase-admin";
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount['be']),
@@ -18,3 +18,4 @@ admin.initializeApp({
 
 export default admin;
 export const firestore = admin.firestore();
+export const account = serviceAccount

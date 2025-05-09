@@ -8,9 +8,17 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(async (config) => {
     const user = auth.currentUser;
+    console.log("Firebase auth state:", user ? "User logged in" : "No user logged in");
     if (user) {
-        const token = await user.getIdToken();
-        config.headers.Authorization = `Bearer ${token}`;
+        try {
+            const token = await user.getIdToken();
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log("Token added to request");
+        } catch (error) {
+            console.error("Error getting auth token:", error);
+        }
+    } else {
+        console.warn("No authentication token available - request will fail with 403");
     }
     return config;
 });

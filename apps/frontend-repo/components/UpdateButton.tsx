@@ -29,6 +29,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import AddIcon from '@mui/icons-material/Add';
 import { getInitials, formatDate, getActivityColor, getIconColor } from "@/utils/formatUtils";
 import { getDatabase, ref, onValue, off } from 'firebase/database';
+import { auth } from "../config/firebase";
 
 declare global {
     interface Window {
@@ -83,6 +84,18 @@ export default function UsersList() {
                 setIsLoading(true);
             } else {
                 setIsLoadingMore(true);
+            }
+
+            // Check if user is logged in
+            if (!auth.currentUser) {
+                setUpdateStatus({
+                    open: true,
+                    message: 'You must be logged in to view users',
+                    severity: 'error'
+                });
+                setIsLoading(false);
+                setIsLoadingMore(false);
+                return;
             }
 
             const response = await fetchUsers({

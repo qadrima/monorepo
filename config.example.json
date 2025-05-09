@@ -1,22 +1,25 @@
 {
     "localhost": true,
     "be": {
-        "type": "",
-        "project_id": "",
-        "private_key_id": "",
-        "private_key": "",
-        "client_email": "",
-        "client_id": "",
-        "auth_uri": "",
-        "token_uri": "",
-        "auth_provider_x509_cert_url": "",
-        "client_x509_cert_url": "",
-        "universe_domain": ""
+        "type": "service_account",
+        "project_id": "YOUR-PROJECT-ID",
+        "private_key_id": "YOUR-PROJECT-ID",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDE1q6SRZmj1Geh\nBawm1DZ1n3Ms/woQkHMlMp8yVSpk4FhN0W645kDGSgCcKRN0U6FAVoIzucqbjySk\n4LK65NOWp+Jwxf1RaJl2+csS3inrBHFwJ+x/te97SIYneFY/RxLZbiHz6aJ1GD0E\nYLWiXYnbLgzsqyNlzm8e4bpmhsOg7p5HUC1W3HbbOA9u2r8WSzS4QBLs4qpasyad\n0H12R6scUjdlDzNqnFtNppNN10xDA3sc7gqHIrR31KJrVt6rVqo5y4bxrjrt+tIC\nyxveboMmPSks12PycrvMaEs5rGzttCC8lZ7cPa4Lics++u8rAmyvtzDEUHTr8/pl\nx7hBNNMxAgMBAAECggEAYFKoCdc6WJP8BC2Y8UVer/nSLF4/yBxP5I+RnNlVThkE\nzUvj8WJnp0EWbFSjewTjv26192b/MUGKjo6Ql+mbazmLk2En1dsoYjLZv8ls3N+H\nPXmj/1kCMKOsVotKNVvr6u+8eLZHdCKg1VAYAjTg3Zt64qPaxhqPgR64Dyz6dXkC\nQL8jU36SHSfGryf3CQBb58zuvnvvkDROmt29Pk/YnRI1fD6gmfid/HJxzrEail82\nR+yuiVjSEWTNzbFZs8W4ev0kNJHzH8gIR6QfvNq6TGBsFiRzP5s6v0JWvUJoGMyU\nZt0njUSqSj9lUy/O+ygb2enJCTbv1TJS8FsdSlwCcwKBgQD8+6fagFCeabhnVdwt\n+ktzD1G0s8j6hcT7Di1ympXbaAtYuOI9Mjx7LL1yI4cWLo7PzEQhwhh3RFxh+aUT\n6iXAvK352enImouZA5/SvIBV0trp9KS6N5UmMqY4CUhmzAHzeIt6w8IddoexR4HG\nIw1ugyzpmckKeIJDASiMJu1TewKBgQDHL57ClC5qGcPLuUOc+bo25XWFne7I9I3A\nihs3ftSYZhIPy/TrIsa+xgYA/8KBbhqtoP+/mqmZxHSQ93yL0Psby9VBwdLPNBUQ\nlZs+ddFeB5KyTjJ34yYkRj3NaPPztu0CdOAlbOIL6TqrEPztuuHQp3LCGnDNH97+\nmkyQqlHOQwKBgHRHi4hwEB4wA7VjjpeHgyR4txpyxH75+2dVxef2S8kUUprOKBbu\nv0PydYU/9Thp3/R9NBe8Khiv0DKsV4cGyaGEWAcOdVliR6XmN5DaWbaY+0wryYda\nQvDSuPnqsl+lh4QMNTgRQGjgcVA3yNt0gxj3rC4XJIPujhkUMDnzLoR/AoGAZEBC\nfpqINdyb4DhxoFtMbv7URJj1quzzP3oDMs5CACY3Zv33WjVZpIEUWoJfijc5dDQ5\nJF2aiQsIxEHbzJ81E4tm3T7JdII5K+ywgyJXayUSn22eFxsbglxcFLuDNSHXbkoW\n2p9PskEDxz+4nYpWx2bP6oPWTFeDK8/LQ3CF1fMCgYEA4/4UjYTUIIvl/eiisyQr\nwttgTydhd6CzoL7v7wsYk1ASVuKYI33nntKH4shjM4DjaYQNc6+qquDPejCkfQWf\nmBPZFeMQyVYPeGruqjwGU4NFr1AoIftvfc6S3iwnbysZCXwWiNQaIDv39PA7cKGz\n9+Fdb4xpNsrH4gludV0qZp8=\n-----END PRIVATE KEY-----\n",
+        "client_email": "YOUR-CLIENT-EMAIL",
+        "client_id": "YOUR-CLIENT-ID",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "YOUR-CERT-URL",
+        "universe_domain": "googleapis.com"
     },
     "fe": {
-        "projectId": "",
-        "apiKey": "",
-        "authDomain": "",
-        "appId": ""
+        "apiKey": "YOUR-API-KEY",
+        "authDomain": "YOUR-PROJECT-ID.firebaseapp.com",
+        "databaseURL": "https://YOUR-PROJECT-ID.firebaseio.com",
+        "projectId": "YOUR-PROJECT-ID",
+        "storageBucket": "YOUR-PROJECT-ID.firebasestorage.app",
+        "messagingSenderId": "YOUR-MESSAGING-SENDER-ID",
+        "appId": "YOUR-APP-ID"
     }
 }

@@ -65,7 +65,7 @@ npm run build
 If you encounter any issues during installation or setup:
 
 1. Make sure all prerequisites are installed correctly
-2. Verify that `config.json` is properly configured
+2. Verify that `config.json` is properly configured (real config firebase)
 3. Clear node_modules and reinstall if necessary:
    ```bash
    rm -rf node_modules
